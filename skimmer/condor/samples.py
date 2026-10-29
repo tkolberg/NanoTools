@@ -1,5 +1,5 @@
 from metis.Sample import DirectorySample, DBSSample
-from vbsvvh_data import nanoaodv15_run3_data, nanoaodv15_run2_data, nanoaodv15_run3_data_2025, nanoaodv15_run3_data_2026
+from vbsvvh_data import nanoaodv15_run3_data, nanoaodv15_run2_data, nanoaodv15_run3_data_2025, nanoaodv15_run3_data_2026, nanoaodv15_run3_data_2026_jetmet
 from vbsvvh_mc import nanoaodv15_run2_bkg, nanoaodv15_run2_sig, nanoaodv15_run3_bkg, nanoaodv15_run3_sig
 from vbsvvh_mc import nanoaodv15_run2_bkg_dy_htbinned, nanoaodv15_run2_bkg_dy_jetbinned
 from vbsvvh_mc import nanoaodv15_run2_bkg_zz4l, nanoaodv15_run3_bkg_ggzz4l
@@ -55,6 +55,11 @@ SAMPLE_REGISTRY = {
     # NanoCORE and the EGamma4/5 + Muon2/3 entries in submit.py LEPTON_PDS.
     "run3_data_2026": {
         "samples": nanoaodv15_run3_data_2026,
+        "metadata": {"run": "Run3", "type": "Data", "nano": "v15"},
+    },
+    # 2026 PromptReco JetMET, eras A, B, D (see vbsvvh_data.py).
+    "run3_data_2026_jetmet": {
+        "samples": nanoaodv15_run3_data_2026_jetmet,
         "metadata": {"run": "Run3", "type": "Data", "nano": "v15"},
     },
     "run3_bkg": {

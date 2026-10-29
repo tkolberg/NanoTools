@@ -595,3 +595,20 @@ nanoaodv15_run3_data_2026 = [
     DBSSample(dataset="/MuonEG/Run2026C-PromptReco-v1/NANOAOD"),
     DBSSample(dataset="/MuonEG/Run2026D-PromptReco-v1/NANOAOD"),
 ]
+
+# ------------------------------------------------------------------
+# 2026 PromptReco JetMET (0-lepton channels). Eras A, B, D only: every run in
+# the 2026 golden JSON (Cert_Collisions2026_401624_403937) sits in A, B or D,
+# each run in exactly one era. 2026C is a dedicated low-PU run with no golden
+# run, and is where JetMET2-5 appear; it is left out. The PromptBTVNano and
+# PromptJMENano processings are POG custom Nanos, not used.
+# ------------------------------------------------------------------
+nanoaodv15_run3_data_2026_jetmet = [
+
+    DBSSample(dataset="/JetMET0/Run2026A-PromptReco-v1/NANOAOD"),
+    DBSSample(dataset="/JetMET0/Run2026B-PromptReco-v1/NANOAOD"),
+    DBSSample(dataset="/JetMET0/Run2026D-PromptReco-v1/NANOAOD"),
+    DBSSample(dataset="/JetMET1/Run2026A-PromptReco-v1/NANOAOD"),
+    DBSSample(dataset="/JetMET1/Run2026B-PromptReco-v1/NANOAOD"),
+    DBSSample(dataset="/JetMET1/Run2026D-PromptReco-v1/NANOAOD"),
+]
