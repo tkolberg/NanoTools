@@ -18,7 +18,7 @@ W=${TMPDIR:-/tmp}/sk26_${ID}_$$; mkdir -p $W && cd $W && cp $BASE/tasks/package.
 ( while sleep 10; do echo "[hb] $(date +%T) task $ID in $(du -sm $W/data 2>/dev/null | cut -f1) MB, out $(du -cm $W/CMSSW_*/output*.root 2>/dev/null | tail -1 | cut -f1) MB"; done ) & HB=$!
 t0=$(date +%s)
 bash $EXE $OUTDIR output "$LFNS" $IFILE CMSSW_16_0_0_pre4 el9_amd64_gcc13 -d ./ -a $CH -t Events -T Events 2>&1 \
-    | grep -v '^\[DEBUG\]'
+    | grep -v -E '^\[DEBUG\]|^[[:space:]]*$'
 RC=${PIPESTATUS[0]}
 kill $HB 2>/dev/null
 [ $RC -eq 0 ] && [ ! -s $OUTDIR/output_${IFILE}.root ] && { echo "rc 0 but no output"; RC=4; }
