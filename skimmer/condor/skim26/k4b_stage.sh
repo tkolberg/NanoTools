@@ -13,7 +13,8 @@ export X509_VOMS_DIR=/cvmfs/cms.cern.ch/grid/etc/grid-security/vomsdir
 cd /home/tkolberg.fsu/vbs/wt/skim26-nanotools/skimmer && source setup.sh el9 >/dev/null || exit 3
 mkdir -p $STAGE; : > $GOOD; : > $DROP
 for lfn in ${LFNS//,/ }; do
-  b=$(basename $lfn); dest=$STAGE/$b
+  # keep the LFN layout below /store: the skimmer reads the year from the path (Run2026B)
+  b=$(basename $lfn); dest=$STAGE/${lfn#/store/}; mkdir -p $(dirname $dest)
   want=$(awk -v b=$b '$1==b{print $2}' $ADLER)
   [ -n "$want" ] || { echo "[stage] $b: no DAS adler32 in $ADLER"; exit 3; }
   want=$(printf '%08x' 0x$want)
