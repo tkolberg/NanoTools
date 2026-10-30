@@ -48,7 +48,10 @@ function chirp {
     echo "[chirp] Chirped $1 => $2 with exit code $ret"
 }
 
-if [[ ${INPUTFILENAMES} != /cmsuf/* ]]; then
+# Inputs already on this node (an existing local path) are read in place, like /cmsuf ones.
+LOCAL_INPUTS=0
+[[ ${INPUTFILENAMES} == /cmsuf/* || -f ${INPUTFILENAMES%%,*} ]] && LOCAL_INPUTS=1
+if [ ${LOCAL_INPUTS} -eq 0 ]; then
     INPUTFILENAMES=${INPUTFILENAMES//\/store/root:\/\/cmsxrootd.fnal.gov\/\/store}
 fi
 
@@ -99,7 +102,7 @@ tar xf package.tar.gz
 
 if [[ ${INPUTFILENAMES} == *"ULSignalSamples"* ]]; then
     :
-elif [[ ${INPUTFILENAMES} == /cmsuf/* ]]; then
+elif [ ${LOCAL_INPUTS} -eq 1 ]; then
     # Local files on shared filesystem — just convert commas to spaces
     INPUTFILENAMES=${INPUTFILENAMES//,/ }
     echo "Using local files (no xrdcp needed): ${INPUTFILENAMES}"

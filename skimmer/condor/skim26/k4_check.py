@@ -34,7 +34,11 @@ for i, (ch, ds, ifile, lfns) in enumerate(man, 1):
     if not (nout == nroot == nrs):
         bad["count"] += 1; print("COUNT task", i, "TheEnd", nout, "root", nroot, "runs_summary", nrs)
     if use_das:
-        want = sum(nev.get(f, -10**12) for f in lfns.split(","))
+        dfile = f"{d}/dropped_{ifile}.txt"   # K4b: inputs with no readable DAS-matching copy
+        dropped = {l.split()[0] for l in open(dfile)} if os.path.exists(dfile) else set()
+        if dropped:
+            print("DROPPED task", i, ch, ds, ifile, len(dropped), "files", sum(nev.get(f, 0) for f in dropped), "DAS events")
+        want = sum(nev.get(f, -10**12) for f in lfns.split(",") if f not in dropped)
         if nin != want:
             bad["input"] += 1; print("INPUT task", i, "AllEvents", nin, "DAS", want)
     per_ds[(ch, ds)][0] += nin; per_ds[(ch, ds)][1] += 1

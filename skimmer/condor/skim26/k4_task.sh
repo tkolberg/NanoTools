@@ -11,9 +11,18 @@ read -r CH DS IFILE LFNS < <(sed -n "${ID}p" $BASE/tasks/manifest.txt)
 OUTDIR=$BASE/Run3_Data_v15_2026_${CH}/${DS}
 NIN=$(echo $LFNS | tr ',' '\n' | wc -l)
 echo "=== skim26 K4 task $ID | $CH $DS output_${IFILE} | $NIN input files | job ${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID:-local}}_${SLURM_ARRAY_TASK_ID:-} on $(hostname) | package $(sha1sum $BASE/tasks/package.tar.xz | cut -c1-12) | $(date -Is)"
-rm -f $OUTDIR/output_${IFILE}.root $OUTDIR/runs_summary_${IFILE}.json $OUTDIR/cutflow_${IFILE}.*
+rm -f $OUTDIR/output_${IFILE}.root $OUTDIR/runs_summary_${IFILE}.json $OUTDIR/cutflow_${IFILE}.* $OUTDIR/dropped_${IFILE}.txt
 export X509_USER_PROXY=/home/tkolberg.fsu/.x509up_u4924
 W=${TMPDIR:-/tmp}/sk26_${ID}_$$; mkdir -p $W && cd $W && cp $BASE/tasks/package.tar.xz package.tar.gz
+# K4B=1: inputs copied and verified (adler32 = DAS, every entry readable) before the skim;
+# files with no good copy are skipped and listed in dropped_<N>.txt for k4_check.py.
+if [ "${K4B:-0}" == "1" ]; then
+  bash /home/tkolberg.fsu/vbs/wt/skim26-nanotools/skimmer/condor/skim26/k4b_stage.sh $W/in "$LFNS" $W/good.txt $W/dropped.txt \
+    || { echo "stage setup failed"; rm -rf $W; exit 3; }
+  [ -s $W/dropped.txt ] && cp $W/dropped.txt $OUTDIR/dropped_${IFILE}.txt
+  [ -s $W/good.txt ] || { echo "no readable input"; rm -rf $W; exit 5; }
+  LFNS=$(paste -sd, $W/good.txt)
+fi
 # heartbeat: bytes copied in and written out
 ( while sleep 10; do echo "[hb] $(date +%T) task $ID in $(du -sm $W/data 2>/dev/null | cut -f1) MB, out $(du -cm $W/CMSSW_*/output*.root 2>/dev/null | tail -1 | cut -f1) MB"; done ) & HB=$!
 t0=$(date +%s)
