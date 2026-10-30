@@ -27,10 +27,10 @@ for lfn in ${LFNS//,/ }; do
     got=$(python3 $D/adler32.py $dest)
     [ "$got" == "$want" ] || { why+=" ${s}:adler=$got"; continue; }
     rr=$(root -l -b -q "$D/k4_rootread.C(\"$dest\")" 2>&1 | grep '^\[rootread\]')
-    # a copy that matches DAS byte-for-byte but does not read is bad at origin: every
-    # other DAS-matching replica is the same bytes, so stop here
-    [[ "$rr" == *" bad 0 "* ]] || { why+=" ${s}:read(${rr:-crash}) bad-at-origin"; break; }
-    echo "[stage] $b OK from $s ($rr)"; ok=1; break
+    # a DAS-matching copy can still fail to read (K4b: 46043e19 failed from FNAL and read
+    # from Roma), so keep trying the other replicas
+    [[ "$rr" == *" bad 0 "* ]] || { why+=" ${s}:read(${rr:-crash})"; continue; }
+    echo "[stage] $b OK from $s ($rr)${why:+; earlier:$why}"; ok=1; break
   done
   if [ $ok -eq 1 ]; then echo $dest >> $GOOD
   else rm -f $dest; echo "$lfn$why" >> $DROP; echo "[stage] $b DROPPED:$why"; fi
